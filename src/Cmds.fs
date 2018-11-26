@@ -1,43 +1,72 @@
-module Cmds
 
+module Cmds
 open Argu
+open System.CodeDom.Compiler
+
 
 type Config =
     | Help
 
-and Generate =
-    | Help
 
 and Help =
     | Command of string
 
 and Init =
-    | Help
+    | [<MainCommand>] Path of path:string
+    
+with
+    interface IArgParserTemplate with
+        member this.Usage =
+            match this with
+            | Path _ -> "Folder to create records in defaults to doc/adr"
+            
 
-and Link=
-    | Help
+and List  =
+    | [<Hidden>]Foo
+    // class end
+with    
+    interface IArgParserTemplate with
+        member this.Usage = "List decision records"
+    
+and Generate = 
+    | TOC
+    | Graph
+with 
+    interface IArgParserTemplate with
+        member this.Usage =
+            match this with
+            | TOC _ -> "Generate table of contents"
+            | Graph _ -> "Graph"
 
-and List =
+and Link =
     | Help
 
 and New =    
-    | [<Mandatory>] TitleText of string
+    | [<Mandatory>][<MainCommand>] Title of title:string
+    | [<CustomCommandLine("-s")>] Supercedes of adrnumber:int
 with 
     interface IArgParserTemplate with
         member this.Usage = 
             match this with            
-            | TitleText _ -> "new title...."
+            | Title _ -> "Title of the new decision record"
+            | Supercedes _ -> "The number of the record to superced"
 
 and UpgradeRepository=
     | Help
 
 and AdrArgs = 
-    | Version
+    | Version   
+    | [<CliPrefix(CliPrefix.None)>] List of ParseResults<List>
+    | [<CliPrefix(CliPrefix.None)>] Init of ParseResults<Init>
     | [<CliPrefix(CliPrefix.None)>] New of ParseResults<New>
+    | [<CliPrefix(CliPrefix.None)>] Generate of ParseResults<Generate>
 with 
     interface IArgParserTemplate with
         member this.Usage = 
             match this with
-            | Version -> "Prints the version number"
+            | Version -> "Prints the version number"            
             | New _ -> "Create a new adr"
+            | Init _ -> "Init a new set of records" 
+            | List _ -> "List the decision records"
+            | Generate _ -> "Generate summary documentation"
 
