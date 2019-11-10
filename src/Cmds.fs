@@ -41,6 +41,13 @@ with
 and Link =
     | Help
 
+and Version = 
+    | [<Hidden>]Foo
+with interface IArgParserTemplate with  
+        member this.Usage = "Display the tool version"
+    
+
+
 and New =    
     | [<Mandatory>][<MainCommand>] Title of title:string
     | [<CustomCommandLine("-s")>] Supercedes of adrnumber:int
@@ -55,7 +62,7 @@ and UpgradeRepository=
     | Help
 
 and AdrArgs = 
-    | Version   
+    | [<CliPrefix(CliPrefix.None)>] Version of ParseResults<Version>  
     | [<CliPrefix(CliPrefix.None)>] List of ParseResults<List>
     | [<CliPrefix(CliPrefix.None)>] Init of ParseResults<Init>
     | [<CliPrefix(CliPrefix.None)>] New of ParseResults<New>
@@ -64,7 +71,7 @@ with
     interface IArgParserTemplate with
         member this.Usage = 
             match this with
-            | Version -> "Prints the version number"            
+            | Version _ -> "Prints the version number"            
             | New _ -> "Create a new adr"
             | Init _ -> "Init a new set of records" 
             | List _ -> "List the decision records"

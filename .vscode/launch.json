@@ -11,9 +11,8 @@
             "preLaunchTask": "build",
             "program": "${workspaceFolder}/src/bin/Debug/netcoreapp2.1/dotnet-adr.dll",
             "args": [
-                "new",
-                "--title",
-                "My new adr"
+                "version"               
+                            
             ],
             "cwd": "${workspaceFolder}",
             "console": "internalConsole",

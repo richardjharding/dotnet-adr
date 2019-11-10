@@ -14,10 +14,11 @@ let main argv =
         
         //let x = parseResults.GetResult <@ New @>
         //parseResults.
+        let r = parseResults.GetAllResults()
         
         match parseResults.TryGetSubCommand() with
         | Some (New t)  ->                 
-                let z = t.GetResult Title
+                let z = t.GetResult Title                
                 match (t.Contains Title) with
                 | true -> 
                             printfn "got a title"
@@ -25,7 +26,7 @@ let main argv =
                 | false -> printfn "no title supplied"
                 
         | Some (List _) -> printfn "list called"        
-        | Some Version -> printfn "version"
+        | Some (Version _) -> printfn "version"
         | Some (Generate g) -> 
                             printfn "generate summary..."
                             match g.TryGetResult <@TOC@> with
