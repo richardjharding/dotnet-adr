@@ -21,12 +21,16 @@ let main argv =
         | None ->        
                 match parseResults.TryGetSubCommand() with
                 | Some (New t)  ->                 
-                        let z = t.GetResult Title                
-                        match (t.Contains Title) with
-                        | true -> 
-                                    printfn "got a title"
-                                    printfn "title: %s" z
-                        | false -> printfn "no title supplied"
+                        let title = t.TryGetResult Title
+                        let super = t.TryGetResult Supercedes                
+                        match (title, super) with
+                        | Some t, Some s -> 
+                                    printfn "got a title and supercedes"
+                                    printfn "title: %s superceds %i" t s
+                        | Some t, None ->
+                                    printfn "Got a title, no supercedes"
+                                    printfn "title: %s" t
+                        | _,_ -> printfn "%s" (parser.PrintUsage()) //TODO how to print usage for subcommand
                         
                 | Some (List _) -> printfn "list called"        
                 | Some (Version _) -> printfn "version"
@@ -38,7 +42,10 @@ let main argv =
                                     match g.TryGetResult <@Graph@> with
                                     | Some _ -> printfn "graph requested"
                                     | None -> ()
-                | Some (Init i) -> printfn "init called "
+                | Some (Init i) -> 
+                                    match i.TryGetResult Path with
+                                    | Some p -> printfn "Initialising at %s" p
+                                    | None -> printfn "Initialising in default location"
                 | None -> printfn "%s" (parser.PrintUsage())
 
         
